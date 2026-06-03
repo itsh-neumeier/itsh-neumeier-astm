@@ -16,6 +16,8 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versi
 - Dropdown für Video-Fähigkeit bei SIP-Clients.
 - Inline-Editing für Rufnummern, SIP-Clients, Inbound-Routen und Outbound-Routen.
 - Multilingualer WebGUI-Support Deutsch/Englisch mit Flaggen-Umschaltung im Header.
+- Asterisk Monitoring-Seite mit Provider-Registrierungsstatus, Kontakt-/Endpoint-Status, Call-Historie je Rufnummer, globalem Call Log und Live-Log.
+- Automatisch generierte Asterisk CDR- und Logger-Konfiguration für WebGUI-Historie und Live-Log.
 - Login mit PBKDF2-Passworthash und signierter Session-Cookie.
 - SQLite-State für Provider, Rufnummern, SIP-Clients und Routing.
 - Generator für `pjsip.conf`, `extensions.conf`, UniFi-Talk-Zusammenfassung und Security Notes.

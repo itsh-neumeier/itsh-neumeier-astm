@@ -61,4 +61,16 @@ table { width: 100%; border-collapse: collapse; padding: 0; overflow: hidden; }
 th, td { padding: 10px; border-bottom: 1px solid #334155; text-align: left; }
 pre { overflow: auto; white-space: pre-wrap; }
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.compact th, .compact td { padding: 6px; }
+.table-wrap { overflow-x: auto; }
+.section-gap { margin-top: 18px; }
+.status-pill {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 700;
+}
+.status-online { background: rgba(52, 211, 153, .16); color: var(--ok); }
+.status-offline { background: rgba(248, 113, 113, .16); color: var(--danger); }
+.error-text { color: var(--danger); }
 @media (max-width: 900px) { .split { grid-template-columns: 1fr; } header { display:block; } }

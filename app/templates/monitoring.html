@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ t("monitoring") }}</h1>
+<p class="muted">{{ t("monitoring_hint") }}</p>
+
+<div class="grid">
+  {% for item in provider_statuses %}
+  <div class="card">
+    <div class="metric">{{ item.did_plus }}</div>
+    <div class="muted">{{ item.trunk }}</div>
+    <p>
+      <span class="status-pill {{ 'status-online' if item.online else 'status-offline' }}">
+        {{ t("online") if item.online else t("offline") }}
+      </span>
+    </p>
+    <table class="compact">
+      <tr><th>{{ t("registration") }}</th><td>{{ item.registration }}</td></tr>
+      <tr><th>{{ t("contact") }}</th><td>{{ item.contact }}</td></tr>
+      <tr><th>{{ t("endpoint") }}</th><td>{{ item.endpoint }}</td></tr>
+    </table>
+    {% if item.last_error %}
+    <p class="error-text">{{ item.last_error }}</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<h2>{{ t("number_history") }}</h2>
+{% for item in provider_statuses %}
+<section class="card section-gap">
+  <h3>{{ item.did_plus }} <span class="muted">{{ item.trunk }}</span></h3>
+  <div class="table-wrap">
+    <table>
+      <tr>
+        <th>{{ t("time") }}</th>
+        <th>{{ t("direction") }}</th>
+        <th>{{ t("source") }}</th>
+        <th>{{ t("target") }}</th>
+        <th>{{ t("duration") }}</th>
+        <th>{{ t("billsec") }}</th>
+        <th>{{ t("result") }}</th>
+      </tr>
+      {% for call in item.history %}
+      <tr>
+        <td>{{ call.start }}</td>
+        <td>{{ t(call.direction) }}</td>
+        <td>{{ call.src }}</td>
+        <td>{{ call.dst }}</td>
+        <td>{{ call.duration }}</td>
+        <td>{{ call.billsec }}</td>
+        <td>{{ call.disposition }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="muted">{{ t("no_calls") }}</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+</section>
+{% endfor %}
+
+<h2>{{ t("call_log") }}</h2>
+<div class="table-wrap">
+  <table>
+    <tr>
+      <th>{{ t("time") }}</th>
+      <th>{{ t("source") }}</th>
+      <th>{{ t("target") }}</th>
+      <th>{{ t("duration") }}</th>
+      <th>{{ t("billsec") }}</th>
+      <th>{{ t("result") }}</th>
+      <th>{{ t("cdr_userfield") }}</th>
+    </tr>
+    {% for call in latest_calls %}
+    <tr>
+      <td>{{ call.start }}</td>
+      <td>{{ call.src }}</td>
+      <td>{{ call.dst }}</td>
+      <td>{{ call.duration }}</td>
+      <td>{{ call.billsec }}</td>
+      <td>{{ call.disposition }}</td>
+      <td>{{ call.userfield }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="muted">{{ t("no_calls") }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="split section-gap">
+  <section>
+    <h2>{{ t("asterisk_live_log") }}</h2>
+    <pre id="live-log">{{ log }}</pre>
+  </section>
+  <section>
+    <h2>{{ t("raw_status") }}</h2>
+    <details open>
+      <summary>{{ t("registrations") }}</summary>
+      <pre>{{ raw.registrations }}</pre>
+    </details>
+    <details>
+      <summary>{{ t("contacts") }}</summary>
+      <pre>{{ raw.contacts }}</pre>
+    </details>
+    <details>
+      <summary>{{ t("endpoints") }}</summary>
+      <pre>{{ raw.endpoints }}</pre>
+    </details>
+  </section>
+</div>
+
+<script>
+async function refreshLog() {
+  const response = await fetch("/monitoring/logs", {cache: "no-store"});
+  document.getElementById("live-log").textContent = await response.text();
+}
+setInterval(refreshLog, 3000);
+setInterval(() => {
+  if (!document.hidden) window.location.reload();
+}, 30000);
+</script>
+{% endblock %}

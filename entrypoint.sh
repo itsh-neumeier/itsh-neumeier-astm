@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-mkdir -p "${DATA_DIR:-/data}" "${BACKUP_DIR:-/backups}" /var/log/asterisk /var/run/asterisk
+mkdir -p "${DATA_DIR:-/data}" "${BACKUP_DIR:-/backups}" /var/log/asterisk/cdr-csv /var/run/asterisk
 
 if [[ -d /opt/asterisk-defaults && ! -f /etc/asterisk/asterisk.conf ]]; then
   cp -a /opt/asterisk-defaults/. /etc/asterisk/

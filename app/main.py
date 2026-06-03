@@ -3,13 +3,14 @@ from urllib.parse import urlparse
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from . import __version__
 from .generator import apply_config, asterisk_status, render
 from .i18n import SUPPORTED_LANGUAGES, get_language, translate
+from .monitoring import build_monitoring_snapshot, tail_file
 from .security import SESSION_COOKIE, create_session, load_secret, verify_session
 from .store import Store
 
@@ -146,6 +147,27 @@ def dashboard(request: Request, user: str = Depends(current_user)):
             status=status[:4000],
         ),
     )
+
+
+@app.get("/monitoring", response_class=HTMLResponse)
+def monitoring_page(request: Request, user: str = Depends(current_user)):
+    snapshot = build_monitoring_snapshot(store)
+    return templates.TemplateResponse(
+        "monitoring.html",
+        context(
+            request,
+            user,
+            provider_statuses=snapshot["provider_statuses"],
+            latest_calls=snapshot["latest_calls"],
+            raw=snapshot["raw"],
+            log=snapshot["log"],
+        ),
+    )
+
+
+@app.get("/monitoring/logs", response_class=PlainTextResponse)
+def monitoring_logs(user: str = Depends(current_user)):
+    return tail_file(lines=250)
 
 
 @app.get("/settings", response_class=HTMLResponse)

@@ -21,6 +21,7 @@ RUN apt-get update \
     && cd /usr/src/asterisk \
     && ./configure --with-pjproject-bundled --with-jansson-bundled \
     && make menuselect.makeopts \
+    && menuselect/menuselect --enable cdr_csv menuselect.makeopts \
     && make -j"$(nproc)" \
     && make install \
     && make samples \

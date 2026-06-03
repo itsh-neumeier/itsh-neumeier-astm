@@ -4,6 +4,7 @@ import unittest
 
 from app.generator import render
 from app.i18n import translate
+from app.monitoring import calls_for_number, parse_named_status, parse_registration_status
 from app.store import Store
 
 
@@ -19,6 +20,9 @@ class GeneratorTest(unittest.TestCase):
         self.assertIn("[unifi-talk]", rendered.pjsip)
         self.assertIn("[leonet-out-1]", rendered.pjsip)
         self.assertIn("[from-unifi]", rendered.extensions)
+        self.assertIn("enable=yes", rendered.cdr)
+        self.assertIn("loguserfield=yes", rendered.cdr_csv)
+        self.assertIn("full => notice,warning,error,debug,verbose,dtmf", rendered.logger)
         self.assertIn("IP Address Range", rendered.unifi_summary)
 
     def test_provision_unifi_number_creates_inbound_and_outbound_routes(self):
@@ -168,6 +172,52 @@ class GeneratorTest(unittest.TestCase):
     def test_translations_support_german_and_english(self):
         self.assertEqual(translate("de", "save"), "Speichern")
         self.assertEqual(translate("en", "save"), "Save")
+        self.assertEqual(translate("de", "monitoring"), "Monitoring")
+        self.assertEqual(translate("en", "call_log"), "Call log")
+
+    def test_monitoring_parsers_detect_provider_status(self):
+        registration, detail = parse_registration_status(
+            "leonet-out-1-reg/sip:provider.example leonet-out-1-auth Registered",
+            "leonet-out-1-reg",
+        )
+        contact, contact_detail = parse_named_status(
+            "Contact:  leonet-out-1-aor/sip:provider.example  abc Avail 12.3",
+            "leonet-out-1-aor",
+        )
+
+        self.assertEqual(registration, "registered")
+        self.assertIn("Registered", detail)
+        self.assertEqual(contact, "online")
+        self.assertIn("Avail", contact_detail)
+
+    def test_monitoring_call_history_matches_number(self):
+        calls = calls_for_number(
+            [
+                {
+                    "src": "491700000000",
+                    "dst": "49111111111",
+                    "start": "2026-06-03 12:00:00",
+                    "duration": "30",
+                    "billsec": "20",
+                    "disposition": "ANSWERED",
+                    "userfield": "inbound:+49111111111",
+                },
+                {
+                    "src": "100",
+                    "dst": "4989123456",
+                    "start": "2026-06-03 12:05:00",
+                    "duration": "10",
+                    "billsec": "0",
+                    "disposition": "NO ANSWER",
+                    "userfield": "outbound:+49111111111->+4989123456",
+                },
+            ],
+            "+49111111111",
+        )
+
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[0]["direction"], "outbound")
+        self.assertEqual(calls[1]["direction"], "inbound")
 
 
 if __name__ == "__main__":

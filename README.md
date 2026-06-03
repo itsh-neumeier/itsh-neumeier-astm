@@ -14,8 +14,9 @@ Die WebGUI bildet die Kernlogik des ursprünglichen Shell/TUI-Scripts ab:
 - Video-Fähigkeit pro SIP-Client per Dropdown
 - Bestehende Rufnummern, SIP-Clients und Routen direkt in der Tabelle editieren
 - Multilingualer WebGUI-Support Deutsch/Englisch per Flaggen im Header
+- Asterisk Monitoring mit Provider-Registrierungen, Rufnummernstatus, Call-Historie und Live-Log
 - Inbound- und Outbound-Routing
-- Vorschau, Backup, Schreiben von `pjsip.conf` und `extensions.conf`
+- Vorschau, Backup, Schreiben von `pjsip.conf`, `extensions.conf`, CDR- und Logger-Konfiguration
 - Asterisk Reload und Statusanzeige aus der WebGUI
 
 ## Schnellstart
@@ -136,7 +137,15 @@ Wenn Asterisk über Docker Bridge läuft und Gegenstellen nicht im selben Netz l
 5. Unter `Clients` interne Nebenstellen anlegen und Video-Fähigkeit auswählen.
 6. Unter `Routing` Inbound-/Outbound-Routen prüfen oder manuell setzen.
 7. Unter `Apply` Konfiguration prüfen und anwenden.
-8. UniFi-Hinweise unter `UniFi` in UniFi Talk Custom Provider übertragen.
+8. Unter `Monitoring` Provider-Registrierung, Rufnummernstatus, Call-Historie und Asterisk Live-Log prüfen.
+9. UniFi-Hinweise unter `UniFi` in UniFi Talk Custom Provider übertragen.
+
+Monitoring:
+
+- Provider-Status nutzt `asterisk -rx 'pjsip show registrations'`, `pjsip show contacts` und `pjsip show endpoints`.
+- Call-Historie nutzt Asterisk CDR CSV unter `/var/log/asterisk/cdr-csv/Master.csv`.
+- Live-Log liest `/var/log/asterisk/full` und aktualisiert sich in der WebGUI automatisch.
+- Beim Anwenden der Konfiguration schreibt die WebGUI `cdr.conf`, `cdr_csv.conf` und `logger.conf` mit.
 
 Sprache:
 
