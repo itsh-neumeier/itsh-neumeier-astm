@@ -9,6 +9,7 @@ Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versi
 ### Added
 
 - Initiale Docker-AIO-Lösung mit Asterisk und WebGUI.
+- GHCR-Veröffentlichung als `ghcr.io/itsh-neumeier/itsh-neumeier-astm`.
 - Login mit PBKDF2-Passworthash und signierter Session-Cookie.
 - SQLite-State für Provider, Rufnummern, SIP-Clients und Routing.
 - Generator für `pjsip.conf`, `extensions.conf`, UniFi-Talk-Zusammenfassung und Security Notes.

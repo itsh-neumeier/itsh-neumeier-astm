@@ -1,6 +1,7 @@
 services:
   astm:
     build: .
+    image: ghcr.io/itsh-neumeier/itsh-neumeier-astm:latest
     container_name: itsh-neumeier-astm
     restart: unless-stopped
     environment:

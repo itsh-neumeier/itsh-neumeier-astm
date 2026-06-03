@@ -20,6 +20,30 @@ cp .env.example .env
 docker compose --env-file .env up -d --build
 ```
 
+## Fertiges GHCR Image
+
+Nach jedem Push auf `main` wird ein Container Image in GitHub Container Registry veröffentlicht:
+
+```bash
+docker pull ghcr.io/itsh-neumeier/itsh-neumeier-astm:latest
+```
+
+Direkt starten:
+
+```bash
+docker run -d \
+  --name itsh-neumeier-astm \
+  --restart unless-stopped \
+  -e ADMIN_PASSWORD='change-this-password' \
+  -p 8080:8080/tcp \
+  -p 5060:5060/udp \
+  -p 10000-20000:10000-20000/udp \
+  -v astm-data:/data \
+  -v astm-backups:/backups \
+  -v astm-asterisk:/etc/asterisk \
+  ghcr.io/itsh-neumeier/itsh-neumeier-astm:latest
+```
+
 WebGUI:
 
 ```text
