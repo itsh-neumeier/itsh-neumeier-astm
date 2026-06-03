@@ -10,6 +10,8 @@ Die WebGUI bildet die Kernlogik des ursprünglichen Shell/TUI-Scripts ab:
 - Mehrere öffentliche Rufnummern mit SIP-Zugangsdaten
 - UniFi Talk Custom Provider Gateway über `external_talk` Port `6767`
 - Interne SIP-Clients/Nebenstellen inklusive Caller-ID und optionaler IP-ACL
+- 1-Click-Provisioning einer Rufnummer für UniFi Talk inklusive Inbound- und Outbound-Route
+- Video-Fähigkeit pro SIP-Client per Dropdown
 - Inbound- und Outbound-Routing
 - Vorschau, Backup, Schreiben von `pjsip.conf` und `extensions.conf`
 - Asterisk Reload und Statusanzeige aus der WebGUI
@@ -128,10 +130,13 @@ Wenn Asterisk über Docker Bridge läuft und Gegenstellen nicht im selben Netz l
 1. WebGUI öffnen und einloggen.
 2. Unter `Provider` Asterisk-IP, UniFi-IP, Provider-Daten und NAT-Werte prüfen.
 3. Unter `Rufnummern` SIP-Trunk-Nummern und Credentials pflegen.
-4. Unter `Clients` interne Nebenstellen anlegen.
-5. Unter `Routing` Inbound-/Outbound-Routen setzen.
-6. Unter `Apply` Konfiguration prüfen und anwenden.
-7. UniFi-Hinweise unter `UniFi` in UniFi Talk Custom Provider übertragen.
+4. Unter `Rufnummern` per `1-Click provisionieren` eine UniFi-Talk-Rufnummer routen.
+5. Unter `Clients` interne Nebenstellen anlegen und Video-Fähigkeit auswählen.
+6. Unter `Routing` Inbound-/Outbound-Routen prüfen oder manuell setzen.
+7. Unter `Apply` Konfiguration prüfen und anwenden.
+8. UniFi-Hinweise unter `UniFi` in UniFi Talk Custom Provider übertragen.
+
+Hinweis: Das 1-Click-Provisioning erstellt oder aktualisiert `DID -> unifi-talk` eingehend und setzt ausgehend `unifi/unifi-talk -> gewählte Rufnummer`. Wenn eine andere Rufnummer provisioniert wird, ersetzt sie die UniFi-Talk-Default-Caller-ID für ausgehende Anrufe.
 
 ## Lokale Entwicklung
 

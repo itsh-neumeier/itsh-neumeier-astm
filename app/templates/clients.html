@@ -2,11 +2,21 @@
 {% block content %}
 <h1>SIP-Clients / Nebenstellen</h1>
 <table>
-  <tr><th>ID</th><th>Name</th><th>Ext</th><th>User</th><th>Caller-ID</th><th>Aktiv</th><th>Aktion</th></tr>
+  <tr><th>ID</th><th>Name</th><th>Ext</th><th>User</th><th>Caller-ID</th><th>Video</th><th>Aktiv</th><th>Aktion</th></tr>
   {% for client in clients %}
   <tr>
-    <td>{{ client.client_id }}</td><td>{{ client.name }}</td><td>{{ client.extension }}</td><td>{{ client.sip_username }}</td><td>{{ client.caller_id_plus }}</td><td>{{ client.enabled }}</td>
-    <td><form method="post" action="/delete/clients/{{ client.id }}" style="padding:0;border:0;background:transparent"><button class="danger">Löschen</button></form></td>
+    <td>{{ client.client_id }}</td>
+    <td>{{ client.name }}</td>
+    <td>{{ client.extension }}</td>
+    <td>{{ client.sip_username }}</td>
+    <td>{{ client.caller_id_plus }}</td>
+    <td>{% if client.video_enabled %}{{ client.video_codecs }}{% else %}nein{% endif %}</td>
+    <td>{{ client.enabled }}</td>
+    <td>
+      <form method="post" action="/delete/clients/{{ client.id }}" style="padding:0;border:0;background:transparent">
+        <button class="danger">Löschen</button>
+      </form>
+    </td>
   </tr>
   {% endfor %}
 </table>
@@ -25,9 +35,13 @@
       <label>Caller-ID Plus optional</label><input name="caller_id_plus" placeholder="+491234567890">
       <label>Typ</label><input name="client_type" value="generic">
       <label>Audio-Codecs</label><input name="audio_codecs" value="alaw,ulaw">
-      <label>Video-Codecs</label><input name="video_codecs" placeholder="h264">
+      <label>Video-Fähigkeit</label>
+      <select name="video_profile">
+        <option value="none">Nein / Audio-only</option>
+        <option value="h264">Ja - H.264</option>
+        <option value="h264_vp8">Ja - H.264 + VP8</option>
+      </select>
       <label><input type="checkbox" name="enabled" checked style="width:auto"> Aktiv</label>
-      <label><input type="checkbox" name="video_enabled" style="width:auto"> Video aktiv</label>
     </section>
   </div>
   <button type="submit">Hinzufügen</button>

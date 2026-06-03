@@ -2,14 +2,25 @@
 {% block content %}
 <h1>Provider-Rufnummern</h1>
 <table>
-  <tr><th>DID</th><th>SIP User</th><th>Aktion</th></tr>
+  <tr><th>DID</th><th>SIP User</th><th>UniFi Talk</th><th>Aktion</th></tr>
   {% for number in numbers %}
   <tr>
-    <td>{{ number.did_plus }}</td><td>{{ number.sip_username }}</td>
-    <td><form method="post" action="/delete/numbers/{{ number.id }}" style="padding:0;border:0;background:transparent"><button class="danger">Löschen</button></form></td>
+    <td>{{ number.did_plus }}</td>
+    <td>{{ number.sip_username }}</td>
+    <td>
+      <form method="post" action="/numbers/{{ number.id }}/provision-unifi" style="padding:0;border:0;background:transparent">
+        <button type="submit">1-Click provisionieren</button>
+      </form>
+    </td>
+    <td>
+      <form method="post" action="/delete/numbers/{{ number.id }}" style="padding:0;border:0;background:transparent">
+        <button class="danger">Löschen</button>
+      </form>
+    </td>
   </tr>
   {% endfor %}
 </table>
+<p class="muted">1-Click provisioniert die Rufnummer für UniFi Talk: eingehend DID -> UniFi Talk und ausgehend UniFi Talk -> diese Caller-ID.</p>
 <h2>Rufnummer hinzufügen</h2>
 <form method="post" action="/numbers">
   <label>DID mit Plus</label><input name="did_plus" placeholder="+491234567890" required>

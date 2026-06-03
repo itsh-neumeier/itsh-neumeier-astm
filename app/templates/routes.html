@@ -1,13 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Routing</h1>
+<p class="muted">UniFi Talk kann unter <a href="/numbers">Rufnummern</a> per 1-Click provisioniert werden. Dabei werden Inbound- und Outbound-Route automatisch gesetzt.</p>
 <div class="split">
   <section>
     <h2>Inbound</h2>
     <table>
       <tr><th>DID</th><th>Ziel</th><th>Ring</th><th>Aktion</th></tr>
       {% for route in inbound %}
-      <tr><td>{{ route.did_plus }}</td><td>{{ route.target_type }}/{{ route.target_id }}</td><td>{{ route.ring_seconds }}</td><td><form method="post" action="/delete/routes_inbound/{{ route.id }}" style="padding:0;border:0;background:transparent"><button class="danger">Löschen</button></form></td></tr>
+      <tr>
+        <td>{{ route.did_plus }}</td>
+        <td>{{ route.target_type }}/{{ route.target_id }}</td>
+        <td>{{ route.ring_seconds }}</td>
+        <td>
+          <form method="post" action="/delete/routes_inbound/{{ route.id }}" style="padding:0;border:0;background:transparent">
+            <button class="danger">Löschen</button>
+          </form>
+        </td>
+      </tr>
       {% endfor %}
     </table>
     <form method="post" action="/routes/inbound">
@@ -24,7 +34,16 @@
     <table>
       <tr><th>Quelle</th><th>Nummer</th><th>Caller-ID</th><th>Aktion</th></tr>
       {% for route in outbound %}
-      <tr><td>{{ route.source_type }}/{{ route.source_id }}</td><td>{{ route.number_id }}</td><td>{{ route.caller_id_plus }}</td><td><form method="post" action="/delete/routes_outbound/{{ route.id }}" style="padding:0;border:0;background:transparent"><button class="danger">Löschen</button></form></td></tr>
+      <tr>
+        <td>{{ route.source_type }}/{{ route.source_id }}</td>
+        <td>{{ numbers_by_id.get(route.number_id, route.number_id) }}</td>
+        <td>{{ route.caller_id_plus }}</td>
+        <td>
+          <form method="post" action="/delete/routes_outbound/{{ route.id }}" style="padding:0;border:0;background:transparent">
+            <button class="danger">Löschen</button>
+          </form>
+        </td>
+      </tr>
       {% endfor %}
     </table>
     <form method="post" action="/routes/outbound">

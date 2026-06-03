@@ -176,6 +176,12 @@ def add_number(
     return redirect("/numbers")
 
 
+@app.post("/numbers/{number_id}/provision-unifi")
+def provision_unifi_number(number_id: int, user: str = Depends(current_user)):
+    store.provision_unifi_number(number_id)
+    return redirect("/routes")
+
+
 @app.post("/delete/{table}/{row_id}")
 def delete_row(table: str, row_id: int, user: str = Depends(current_user)):
     store.delete_row(table, row_id)
@@ -200,23 +206,44 @@ def add_client(
     caller_id_plus: Annotated[str, Form()] = "",
     client_type: Annotated[str, Form()] = "generic",
     audio_codecs: Annotated[str, Form()] = "alaw,ulaw",
-    video_codecs: Annotated[str, Form()] = "",
+    video_profile: Annotated[str, Form()] = "none",
     enabled: Annotated[str | None, Form()] = None,
-    video_enabled: Annotated[str | None, Form()] = None,
     user: str = Depends(current_user),
 ):
-    store.add_client(locals())
+    video_codecs_by_profile = {
+        "none": "",
+        "h264": "h264",
+        "h264_vp8": "h264,vp8",
+    }
+    store.add_client(
+        {
+            "client_id": client_id,
+            "name": name,
+            "extension": extension,
+            "sip_username": sip_username,
+            "sip_password": sip_password,
+            "ip_acl": ip_acl,
+            "caller_id_plus": caller_id_plus,
+            "client_type": client_type,
+            "audio_codecs": audio_codecs,
+            "enabled": enabled,
+            "video_enabled": video_profile != "none",
+            "video_codecs": video_codecs_by_profile.get(video_profile, ""),
+        }
+    )
     return redirect("/clients")
 
 
 @app.get("/routes", response_class=HTMLResponse)
 def routes_page(request: Request, user: str = Depends(current_user)):
+    numbers = store.list_rows("numbers")
     return templates.TemplateResponse(
         "routes.html",
         context(
             request,
             user,
-            numbers=store.list_rows("numbers"),
+            numbers=numbers,
+            numbers_by_id={number["id"]: number["did_plus"] for number in numbers},
             inbound=store.list_rows("routes_inbound"),
             outbound=store.list_rows("routes_outbound"),
         ),

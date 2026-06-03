@@ -161,6 +161,44 @@ class Store:
             )
             con.commit()
 
+    def get_number(self, number_id: int) -> sqlite3.Row | None:
+        with closing(self.connect()) as con:
+            return con.execute("SELECT * FROM numbers WHERE id = ?", (number_id,)).fetchone()
+
+    def provision_unifi_number(self, number_id: int) -> sqlite3.Row:
+        number = self.get_number(number_id)
+        if not number:
+            raise ValueError("number not found")
+
+        with closing(self.connect()) as con:
+            con.execute(
+                """
+                INSERT INTO routes_inbound(
+                    did_plus, target_type, target_id, ring_seconds, description
+                ) VALUES(?, 'unifi', 'unifi-talk', 60, '1-Click UniFi Talk inbound')
+                ON CONFLICT(did_plus) DO UPDATE SET
+                    target_type = excluded.target_type,
+                    target_id = excluded.target_id,
+                    ring_seconds = excluded.ring_seconds,
+                    description = excluded.description
+                """,
+                (number["did_plus"],),
+            )
+            con.execute(
+                """
+                INSERT INTO routes_outbound(
+                    source_type, source_id, number_id, caller_id_plus, description
+                ) VALUES('unifi', 'unifi-talk', ?, ?, '1-Click UniFi Talk outbound')
+                ON CONFLICT(source_type, source_id) DO UPDATE SET
+                    number_id = excluded.number_id,
+                    caller_id_plus = excluded.caller_id_plus,
+                    description = excluded.description
+                """,
+                (number["id"], number["did_plus"]),
+            )
+            con.commit()
+        return number
+
     def delete_row(self, table: str, row_id: int) -> None:
         allowed = {"numbers", "clients", "routes_inbound", "routes_outbound"}
         if table not in allowed:
