@@ -2,6 +2,8 @@
 
 All-in-one Docker-Lösung für Asterisk PJSIP, SIP-Trunk-Konfiguration, UniFi Talk Gateway und WebGUI-Management mit Login.
 
+Das Image basiert auf Ubuntu LTS und installiert Asterisk über die Distributionspakete.
+
 Die WebGUI bildet die Kernlogik des ursprünglichen Shell/TUI-Scripts ab:
 
 - Provider-/Trunk-Defaults für LEONET und freie Providerwerte
