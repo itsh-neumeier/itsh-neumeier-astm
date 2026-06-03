@@ -1,34 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Provider und Gateway</h1>
+<h1>{{ t("settings_title") }}</h1>
 <form method="post" action="/settings">
   <div class="split">
     <section>
-      <h2>UniFi Talk</h2>
-      <label>Asterisk IP</label><input name="asterisk_ip" value="{{ settings.asterisk_ip }}" required>
-      <label>UniFi Talk IP</label><input name="unifi_ip" value="{{ settings.unifi_ip }}" required>
-      <label>UniFi external_talk Port</label><input name="unifi_port" value="{{ settings.unifi_port }}" required>
-      <label>UniFi IP Address Range</label><input name="unifi_range" value="{{ settings.unifi_range }}" required>
-      <label>Externe Signaling-Adresse optional</label><input name="external_signaling_address" value="{{ settings.external_signaling_address }}">
-      <label>Externe Media-Adresse optional</label><input name="external_media_address" value="{{ settings.external_media_address }}">
-      <label>Lokales Netz optional</label><input name="local_net" value="{{ settings.local_net }}" placeholder="192.168.10.0/24">
+      <h2>{{ t("unifi") }} Talk</h2>
+      <label>{{ t("asterisk_ip") }}</label><input name="asterisk_ip" value="{{ settings.asterisk_ip }}" required>
+      <label>{{ t("unifi_ip") }}</label><input name="unifi_ip" value="{{ settings.unifi_ip }}" required>
+      <label>{{ t("unifi_port") }}</label><input name="unifi_port" value="{{ settings.unifi_port }}" required>
+      <label>{{ t("unifi_range") }}</label><input name="unifi_range" value="{{ settings.unifi_range }}" required>
+      <label>{{ t("external_signaling") }}</label><input name="external_signaling_address" value="{{ settings.external_signaling_address }}">
+      <label>{{ t("external_media") }}</label><input name="external_media_address" value="{{ settings.external_media_address }}">
+      <label>{{ t("local_net") }}</label><input name="local_net" value="{{ settings.local_net }}" placeholder="192.168.10.0/24">
     </section>
     <section>
-      <h2>SIP-Provider</h2>
-      <label>Name</label><input name="provider_display_name" value="{{ settings.provider_display_name }}" required>
-      <label>Registrar</label><input name="provider_registrar" value="{{ settings.provider_registrar }}" required>
-      <label>Server URI</label><input name="provider_server_uri" value="{{ settings.provider_server_uri }}" required>
-      <label>From Domain</label><input name="provider_from_domain" value="{{ settings.provider_from_domain }}" required>
-      <label>Match IP/CIDR</label><input name="provider_match_ip" value="{{ settings.provider_match_ip }}">
-      <label>Transport</label><input name="provider_transport" value="{{ settings.provider_transport }}">
-      <label>Outbound Proxy</label><input name="provider_outbound_proxy" value="{{ settings.provider_outbound_proxy }}">
-      <label>Registrierung</label>
+      <h2>{{ t("sip_provider") }}</h2>
+      <label>{{ t("name") }}</label><input name="provider_display_name" value="{{ settings.provider_display_name }}" required>
+      <label>{{ t("registrar") }}</label><input name="provider_registrar" value="{{ settings.provider_registrar }}" required>
+      <label>{{ t("server_uri") }}</label><input name="provider_server_uri" value="{{ settings.provider_server_uri }}" required>
+      <label>{{ t("from_domain") }}</label><input name="provider_from_domain" value="{{ settings.provider_from_domain }}" required>
+      <label>{{ t("match_ip") }}</label><input name="provider_match_ip" value="{{ settings.provider_match_ip }}">
+      <label>{{ t("transport") }}</label><input name="provider_transport" value="{{ settings.provider_transport }}">
+      <label>{{ t("outbound_proxy") }}</label><input name="provider_outbound_proxy" value="{{ settings.provider_outbound_proxy }}">
+      <label>{{ t("registration") }}</label>
       <select name="provider_use_registration">
-        <option value="yes" {% if settings.provider_use_registration == 'yes' %}selected{% endif %}>ja</option>
-        <option value="no" {% if settings.provider_use_registration == 'no' %}selected{% endif %}>nein</option>
+        <option value="yes" {% if settings.provider_use_registration == 'yes' %}selected{% endif %}>{{ t("yes") }}</option>
+        <option value="no" {% if settings.provider_use_registration == 'no' %}selected{% endif %}>{{ t("no") }}</option>
       </select>
     </section>
   </div>
-  <button type="submit">Speichern</button>
+  <button type="submit">{{ t("save") }}</button>
 </form>
 {% endblock %}

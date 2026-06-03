@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="{{ lang }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,18 +12,22 @@
     <strong>ITSH Neumeier Asterisk WebGUI AIO</strong>
     <span class="muted">v{{ version }}</span>
   </div>
-  {% if user %}
   <nav>
-    <a href="/">Dashboard</a>
-    <a href="/settings">Provider</a>
-    <a href="/numbers">Rufnummern</a>
-    <a href="/clients">Clients</a>
-    <a href="/routes">Routing</a>
-    <a href="/preview">Apply</a>
-    <a href="/unifi">UniFi</a>
+    {% if user %}
+    <a href="/">{{ t("dashboard") }}</a>
+    <a href="/settings">{{ t("provider") }}</a>
+    <a href="/numbers">{{ t("numbers") }}</a>
+    <a href="/clients">{{ t("clients") }}</a>
+    <a href="/routes">{{ t("routing") }}</a>
+    <a href="/preview">{{ t("apply") }}</a>
+    <a href="/unifi">{{ t("unifi") }}</a>
+    {% endif %}
+    <a href="/language/de" title="Deutsch">🇩🇪</a>
+    <a href="/language/en" title="English">🇬🇧</a>
   </nav>
+  {% if user %}
   <form method="post" action="/logout" style="padding:0;border:0;background:transparent">
-    <button type="submit">Logout</button>
+    <button type="submit">{{ t("logout") }}</button>
   </form>
   {% endif %}
 </header>

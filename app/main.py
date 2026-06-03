@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Form, Request
@@ -8,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 
 from . import __version__
 from .generator import apply_config, asterisk_status, render
+from .i18n import SUPPORTED_LANGUAGES, get_language, translate
 from .security import SESSION_COOKIE, create_session, load_secret, verify_session
 from .store import Store
 
@@ -41,13 +43,24 @@ def redirect(path: str) -> RedirectResponse:
     return RedirectResponse(path, status_code=303)
 
 
+def safe_referer(request: Request) -> str:
+    referer = request.headers.get("referer", "/")
+    parsed = urlparse(referer)
+    if parsed.netloc and parsed.netloc != request.url.netloc:
+        return "/"
+    return parsed.path or "/"
+
+
 def context(request: Request, user: str, **extra):
     settings = store.get_settings()
+    lang = get_language(request)
     base = {
         "request": request,
         "user": user,
         "version": __version__,
         "settings": settings,
+        "lang": lang,
+        "t": lambda key: translate(lang, key),
     }
     base.update(extra)
     return base
@@ -60,9 +73,25 @@ async def auth_exception_handler(request: Request, exc: PermissionError):
 
 @app.get("/login", response_class=HTMLResponse)
 def login_form(request: Request):
+    lang = get_language(request)
     return templates.TemplateResponse(
-        "login.html", {"request": request, "version": __version__, "error": None}
+        "login.html",
+        {
+            "request": request,
+            "version": __version__,
+            "error": None,
+            "lang": lang,
+            "t": lambda key: translate(lang, key),
+        },
     )
+
+
+@app.get("/language/{lang}")
+def set_language(lang: str, request: Request):
+    response = redirect(safe_referer(request))
+    if lang in SUPPORTED_LANGUAGES:
+        response.set_cookie("lang", lang, max_age=365 * 24 * 60 * 60, samesite="lax")
+    return response
 
 
 @app.post("/login")
@@ -72,9 +101,16 @@ def login(
     password: Annotated[str, Form()],
 ):
     if not store.authenticate(username, password):
+        lang = get_language(request)
         return templates.TemplateResponse(
             "login.html",
-            {"request": request, "version": __version__, "error": "Login fehlgeschlagen"},
+            {
+                "request": request,
+                "version": __version__,
+                "error": translate(lang, "login_failed"),
+                "lang": lang,
+                "t": lambda key: translate(lang, key),
+            },
             status_code=401,
         )
     response = redirect("/")
@@ -176,6 +212,18 @@ def add_number(
     return redirect("/numbers")
 
 
+@app.post("/numbers/{number_id}")
+def update_number(
+    number_id: int,
+    did_plus: Annotated[str, Form()],
+    sip_username: Annotated[str, Form()],
+    sip_password: Annotated[str, Form()],
+    user: str = Depends(current_user),
+):
+    store.update_number(number_id, did_plus, sip_username, sip_password)
+    return redirect("/numbers")
+
+
 @app.post("/numbers/{number_id}/provision-unifi")
 def provision_unifi_number(number_id: int, user: str = Depends(current_user)):
     store.provision_unifi_number(number_id)
@@ -234,6 +282,47 @@ def add_client(
     return redirect("/clients")
 
 
+@app.post("/clients/{row_id}")
+def update_client(
+    row_id: int,
+    client_id: Annotated[str, Form()],
+    name: Annotated[str, Form()],
+    extension: Annotated[str, Form()],
+    sip_username: Annotated[str, Form()],
+    sip_password: Annotated[str, Form()],
+    ip_acl: Annotated[str, Form()] = "",
+    caller_id_plus: Annotated[str, Form()] = "",
+    client_type: Annotated[str, Form()] = "generic",
+    audio_codecs: Annotated[str, Form()] = "alaw,ulaw",
+    video_profile: Annotated[str, Form()] = "none",
+    enabled: Annotated[str | None, Form()] = None,
+    user: str = Depends(current_user),
+):
+    video_codecs_by_profile = {
+        "none": "",
+        "h264": "h264",
+        "h264_vp8": "h264,vp8",
+    }
+    store.update_client(
+        row_id,
+        {
+            "client_id": client_id,
+            "name": name,
+            "extension": extension,
+            "sip_username": sip_username,
+            "sip_password": sip_password,
+            "ip_acl": ip_acl,
+            "caller_id_plus": caller_id_plus,
+            "client_type": client_type,
+            "audio_codecs": audio_codecs,
+            "enabled": enabled,
+            "video_enabled": video_profile != "none",
+            "video_codecs": video_codecs_by_profile.get(video_profile, ""),
+        },
+    )
+    return redirect("/clients")
+
+
 @app.get("/routes", response_class=HTMLResponse)
 def routes_page(request: Request, user: str = Depends(current_user)):
     numbers = store.list_rows("numbers")
@@ -263,6 +352,20 @@ def add_inbound_route(
     return redirect("/routes")
 
 
+@app.post("/routes/inbound/{route_id}")
+def update_inbound_route(
+    route_id: int,
+    did_plus: Annotated[str, Form()],
+    target_type: Annotated[str, Form()],
+    target_id: Annotated[str, Form()],
+    ring_seconds: Annotated[int, Form()] = 45,
+    description: Annotated[str, Form()] = "",
+    user: str = Depends(current_user),
+):
+    store.update_inbound_route(route_id, locals())
+    return redirect("/routes")
+
+
 @app.post("/routes/outbound")
 def add_outbound_route(
     source_type: Annotated[str, Form()],
@@ -273,6 +376,20 @@ def add_outbound_route(
     user: str = Depends(current_user),
 ):
     store.add_outbound_route(locals())
+    return redirect("/routes")
+
+
+@app.post("/routes/outbound/{route_id}")
+def update_outbound_route(
+    route_id: int,
+    source_type: Annotated[str, Form()],
+    source_id: Annotated[str, Form()],
+    number_id: Annotated[int, Form()],
+    caller_id_plus: Annotated[str, Form()] = "",
+    description: Annotated[str, Form()] = "",
+    user: str = Depends(current_user),
+):
+    store.update_outbound_route(route_id, locals())
     return redirect("/routes")
 
 

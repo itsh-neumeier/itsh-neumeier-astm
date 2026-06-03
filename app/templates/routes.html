@@ -1,61 +1,83 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Routing</h1>
-<p class="muted">UniFi Talk kann unter <a href="/numbers">Rufnummern</a> per 1-Click provisioniert werden. Dabei werden Inbound- und Outbound-Route automatisch gesetzt.</p>
+<h1>{{ t("routing") }}</h1>
+<p class="muted">{{ t("routing_hint") }}</p>
 <div class="split">
   <section>
-    <h2>Inbound</h2>
+    <h2>{{ t("inbound") }}</h2>
     <table>
-      <tr><th>DID</th><th>Ziel</th><th>Ring</th><th>Aktion</th></tr>
+      <tr><th>{{ t("did_plus") }}</th><th>{{ t("target_type") }}</th><th>{{ t("target_id") }}</th><th>{{ t("ring_seconds") }}</th><th>{{ t("description") }}</th><th>{{ t("action") }}</th></tr>
       {% for route in inbound %}
       <tr>
-        <td>{{ route.did_plus }}</td>
-        <td>{{ route.target_type }}/{{ route.target_id }}</td>
-        <td>{{ route.ring_seconds }}</td>
-        <td>
-          <form method="post" action="/delete/routes_inbound/{{ route.id }}" style="padding:0;border:0;background:transparent">
-            <button class="danger">Löschen</button>
-          </form>
-        </td>
+        <form method="post" action="/routes/inbound/{{ route.id }}">
+          <td><input name="did_plus" value="{{ route.did_plus }}" required></td>
+          <td>
+            <select name="target_type">
+              <option value="unifi" {% if route.target_type == 'unifi' %}selected{% endif %}>unifi</option>
+              <option value="client" {% if route.target_type == 'client' %}selected{% endif %}>client</option>
+            </select>
+          </td>
+          <td><input name="target_id" value="{{ route.target_id }}" required></td>
+          <td><input name="ring_seconds" value="{{ route.ring_seconds }}"></td>
+          <td><input name="description" value="{{ route.description }}"></td>
+          <td>
+            <button type="submit">{{ t("save") }}</button>
+            <button class="danger" type="submit" formaction="/delete/routes_inbound/{{ route.id }}">{{ t("delete") }}</button>
+          </td>
+        </form>
       </tr>
       {% endfor %}
     </table>
     <form method="post" action="/routes/inbound">
-      <label>DID</label><input name="did_plus" placeholder="+491234567890" required>
-      <label>Zieltyp</label><select name="target_type"><option value="unifi">unifi</option><option value="client">client</option></select>
-      <label>Ziel-ID</label><input name="target_id" placeholder="unifi-talk oder client100" required>
-      <label>Klingelzeit</label><input name="ring_seconds" value="45">
-      <label>Beschreibung</label><input name="description">
-      <button>Inbound-Route hinzufügen</button>
+      <label>{{ t("did_plus") }}</label><input name="did_plus" placeholder="+491234567890" required>
+      <label>{{ t("target_type") }}</label><select name="target_type"><option value="unifi">unifi</option><option value="client">client</option></select>
+      <label>{{ t("target_id") }}</label><input name="target_id" placeholder="unifi-talk oder client100" required>
+      <label>{{ t("ring_seconds") }}</label><input name="ring_seconds" value="45">
+      <label>{{ t("description") }}</label><input name="description">
+      <button>{{ t("add_inbound_route") }}</button>
     </form>
   </section>
   <section>
-    <h2>Outbound</h2>
+    <h2>{{ t("outbound") }}</h2>
     <table>
-      <tr><th>Quelle</th><th>Nummer</th><th>Caller-ID</th><th>Aktion</th></tr>
+      <tr><th>{{ t("source_type") }}</th><th>{{ t("source_id") }}</th><th>{{ t("provider_number") }}</th><th>{{ t("caller_id") }}</th><th>{{ t("description") }}</th><th>{{ t("action") }}</th></tr>
       {% for route in outbound %}
       <tr>
-        <td>{{ route.source_type }}/{{ route.source_id }}</td>
-        <td>{{ numbers_by_id.get(route.number_id, route.number_id) }}</td>
-        <td>{{ route.caller_id_plus }}</td>
-        <td>
-          <form method="post" action="/delete/routes_outbound/{{ route.id }}" style="padding:0;border:0;background:transparent">
-            <button class="danger">Löschen</button>
-          </form>
-        </td>
+        <form method="post" action="/routes/outbound/{{ route.id }}">
+          <td>
+            <select name="source_type">
+              <option value="unifi" {% if route.source_type == 'unifi' %}selected{% endif %}>unifi</option>
+              <option value="client" {% if route.source_type == 'client' %}selected{% endif %}>client</option>
+            </select>
+          </td>
+          <td><input name="source_id" value="{{ route.source_id }}" required></td>
+          <td>
+            <select name="number_id">
+              {% for number in numbers %}
+              <option value="{{ number.id }}" {% if route.number_id == number.id %}selected{% endif %}>{{ number.did_plus }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td><input name="caller_id_plus" value="{{ route.caller_id_plus }}"></td>
+          <td><input name="description" value="{{ route.description }}"></td>
+          <td>
+            <button type="submit">{{ t("save") }}</button>
+            <button class="danger" type="submit" formaction="/delete/routes_outbound/{{ route.id }}">{{ t("delete") }}</button>
+          </td>
+        </form>
       </tr>
       {% endfor %}
     </table>
     <form method="post" action="/routes/outbound">
-      <label>Quelltyp</label><select name="source_type"><option value="unifi">unifi</option><option value="client">client</option></select>
-      <label>Quell-ID</label><input name="source_id" value="unifi-talk" required>
-      <label>Provider-Rufnummer</label>
+      <label>{{ t("source_type") }}</label><select name="source_type"><option value="unifi">unifi</option><option value="client">client</option></select>
+      <label>{{ t("source_id") }}</label><input name="source_id" value="unifi-talk" required>
+      <label>{{ t("provider_number") }}</label>
       <select name="number_id">
         {% for number in numbers %}<option value="{{ number.id }}">{{ number.did_plus }}</option>{% endfor %}
       </select>
-      <label>Caller-ID Plus optional</label><input name="caller_id_plus">
-      <label>Beschreibung</label><input name="description">
-      <button>Outbound-Route hinzufügen</button>
+      <label>{{ t("caller_id") }}</label><input name="caller_id_plus">
+      <label>{{ t("description") }}</label><input name="description">
+      <button>{{ t("add_outbound_route") }}</button>
     </form>
   </section>
 </div>

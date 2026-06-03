@@ -1,22 +1,31 @@
 <!doctype html>
-<html lang="de">
+<html lang="{{ lang }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login - ITSH Asterisk WebGUI</title>
+  <title>{{ t("login") }} - ITSH Asterisk WebGUI</title>
   <link rel="stylesheet" href="/static/app.css">
 </head>
 <body>
+<header>
+  <div>
+    <strong>ITSH Neumeier Asterisk WebGUI AIO</strong>
+    <span class="muted">v{{ version }}</span>
+  </div>
+  <nav>
+    <a href="/language/de" title="Deutsch">🇩🇪</a>
+    <a href="/language/en" title="English">🇬🇧</a>
+  </nav>
+</header>
 <main style="max-width:480px">
-  <h1>Login</h1>
-  <p class="muted">ITSH Neumeier Asterisk SIP-Trunk Management v{{ version }}</p>
+  <h1>{{ t("login") }}</h1>
   {% if error %}<p style="color:var(--danger)">{{ error }}</p>{% endif %}
   <form method="post" action="/login">
-    <label>Benutzer</label>
+    <label>{{ t("username") }}</label>
     <input name="username" value="admin" required>
-    <label>Passwort</label>
+    <label>{{ t("password") }}</label>
     <input type="password" name="password" required>
-    <button type="submit">Anmelden</button>
+    <button type="submit">{{ t("login") }}</button>
   </form>
 </main>
 </body>

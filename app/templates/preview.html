@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Konfiguration anwenden</h1>
+<h1>{{ t("apply_config") }}</h1>
 {% if result %}
 <div class="card">
-  <strong>Angewendet.</strong>
+  <strong>{{ t("applied") }}</strong>
   <div>Backup: {{ result.backup }}</div>
   <pre>{{ result.reload }}</pre>
 </div>
 {% endif %}
 <form method="post" action="/apply">
-  <p>Schreibt `pjsip.conf` und `extensions.conf`, legt ein Backup an und lädt PJSIP/Dialplan neu.</p>
-  <button type="submit">Jetzt anwenden</button>
+  <p>{{ t("writes_config") }}</p>
+  <button type="submit">{{ t("apply_now") }}</button>
 </form>
 <h2>pjsip.conf</h2>
 <pre>{{ rendered.pjsip }}</pre>

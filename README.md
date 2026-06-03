@@ -12,6 +12,8 @@ Die WebGUI bildet die Kernlogik des ursprünglichen Shell/TUI-Scripts ab:
 - Interne SIP-Clients/Nebenstellen inklusive Caller-ID und optionaler IP-ACL
 - 1-Click-Provisioning einer Rufnummer für UniFi Talk inklusive Inbound- und Outbound-Route
 - Video-Fähigkeit pro SIP-Client per Dropdown
+- Bestehende Rufnummern, SIP-Clients und Routen direkt in der Tabelle editieren
+- Multilingualer WebGUI-Support Deutsch/Englisch per Flaggen im Header
 - Inbound- und Outbound-Routing
 - Vorschau, Backup, Schreiben von `pjsip.conf` und `extensions.conf`
 - Asterisk Reload und Statusanzeige aus der WebGUI
@@ -135,6 +137,11 @@ Wenn Asterisk über Docker Bridge läuft und Gegenstellen nicht im selben Netz l
 6. Unter `Routing` Inbound-/Outbound-Routen prüfen oder manuell setzen.
 7. Unter `Apply` Konfiguration prüfen und anwenden.
 8. UniFi-Hinweise unter `UniFi` in UniFi Talk Custom Provider übertragen.
+
+Sprache:
+
+- Im Header per 🇩🇪 / 🇬🇧 zwischen Deutsch und Englisch wechseln.
+- Die Auswahl wird als Cookie gespeichert.
 
 Hinweis: Das 1-Click-Provisioning erstellt oder aktualisiert `DID -> unifi-talk` eingehend und setzt ausgehend `unifi/unifi-talk -> gewählte Rufnummer`. Wenn eine andere Rufnummer provisioniert wird, ersetzt sie die UniFi-Talk-Default-Caller-ID für ausgehende Anrufe.
 

@@ -45,6 +45,7 @@ input, select {
   background: #020617;
   color: var(--text);
 }
+td input, td select { min-width: 120px; }
 button, .button {
   border: 0;
   border-radius: 8px;

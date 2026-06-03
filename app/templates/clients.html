@@ -1,49 +1,60 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>SIP-Clients / Nebenstellen</h1>
+<h1>{{ t("sip_clients") }}</h1>
 <table>
-  <tr><th>ID</th><th>Name</th><th>Ext</th><th>User</th><th>Caller-ID</th><th>Video</th><th>Aktiv</th><th>Aktion</th></tr>
+  <tr><th>{{ t("client_id") }}</th><th>{{ t("name") }}</th><th>{{ t("extension") }}</th><th>{{ t("sip_user") }}</th><th>{{ t("sip_password") }}</th><th>{{ t("ip_acl") }}</th><th>{{ t("caller_id") }}</th><th>{{ t("type") }}</th><th>{{ t("audio_codecs") }}</th><th>{{ t("video") }}</th><th>{{ t("enabled") }}</th><th>{{ t("action") }}</th></tr>
   {% for client in clients %}
   <tr>
-    <td>{{ client.client_id }}</td>
-    <td>{{ client.name }}</td>
-    <td>{{ client.extension }}</td>
-    <td>{{ client.sip_username }}</td>
-    <td>{{ client.caller_id_plus }}</td>
-    <td>{% if client.video_enabled %}{{ client.video_codecs }}{% else %}nein{% endif %}</td>
-    <td>{{ client.enabled }}</td>
-    <td>
-      <form method="post" action="/delete/clients/{{ client.id }}" style="padding:0;border:0;background:transparent">
-        <button class="danger">Löschen</button>
-      </form>
-    </td>
+    <form method="post" action="/clients/{{ client.id }}">
+      <td><input name="client_id" value="{{ client.client_id }}" required></td>
+      <td><input name="name" value="{{ client.name }}" required></td>
+      <td><input name="extension" value="{{ client.extension }}" required></td>
+      <td><input name="sip_username" value="{{ client.sip_username }}" required></td>
+      <td><input name="sip_password" value="{{ client.sip_password }}" required></td>
+      <td><input name="ip_acl" value="{{ client.ip_acl }}"></td>
+      <td><input name="caller_id_plus" value="{{ client.caller_id_plus }}"></td>
+      <td><input name="client_type" value="{{ client.client_type }}"></td>
+      <td><input name="audio_codecs" value="{{ client.audio_codecs }}"></td>
+      <td>
+        <select name="video_profile">
+          <option value="none" {% if not client.video_enabled %}selected{% endif %}>{{ t("video_none") }}</option>
+          <option value="h264" {% if client.video_enabled and client.video_codecs == 'h264' %}selected{% endif %}>{{ t("video_h264") }}</option>
+          <option value="h264_vp8" {% if client.video_enabled and client.video_codecs == 'h264,vp8' %}selected{% endif %}>{{ t("video_h264_vp8") }}</option>
+        </select>
+      </td>
+      <td><input type="checkbox" name="enabled" {% if client.enabled %}checked{% endif %} style="width:auto"></td>
+      <td>
+        <button type="submit">{{ t("save") }}</button>
+        <button class="danger" type="submit" formaction="/delete/clients/{{ client.id }}">{{ t("delete") }}</button>
+      </td>
+    </form>
   </tr>
   {% endfor %}
 </table>
-<h2>Client hinzufügen</h2>
+<h2>{{ t("add_client") }}</h2>
 <form method="post" action="/clients">
   <div class="split">
     <section>
-      <label>Client-ID</label><input name="client_id" placeholder="client100" required>
-      <label>Name</label><input name="name" required>
-      <label>Nebenstelle</label><input name="extension" placeholder="100" required>
-      <label>SIP Username</label><input name="sip_username" placeholder="100" required>
-      <label>SIP Passwort</label><input name="sip_password" type="password" required>
+      <label>{{ t("client_id") }}</label><input name="client_id" placeholder="client100" required>
+      <label>{{ t("name") }}</label><input name="name" required>
+      <label>{{ t("extension") }}</label><input name="extension" placeholder="100" required>
+      <label>{{ t("sip_user") }}</label><input name="sip_username" placeholder="100" required>
+      <label>{{ t("sip_password") }}</label><input name="sip_password" type="password" required>
     </section>
     <section>
-      <label>IP ACL optional</label><input name="ip_acl" placeholder="192.168.10.50/32">
-      <label>Caller-ID Plus optional</label><input name="caller_id_plus" placeholder="+491234567890">
-      <label>Typ</label><input name="client_type" value="generic">
-      <label>Audio-Codecs</label><input name="audio_codecs" value="alaw,ulaw">
-      <label>Video-Fähigkeit</label>
+      <label>{{ t("ip_acl") }}</label><input name="ip_acl" placeholder="192.168.10.50/32">
+      <label>{{ t("caller_id") }}</label><input name="caller_id_plus" placeholder="+491234567890">
+      <label>{{ t("type") }}</label><input name="client_type" value="generic">
+      <label>{{ t("audio_codecs") }}</label><input name="audio_codecs" value="alaw,ulaw">
+      <label>{{ t("video_capability") }}</label>
       <select name="video_profile">
-        <option value="none">Nein / Audio-only</option>
-        <option value="h264">Ja - H.264</option>
-        <option value="h264_vp8">Ja - H.264 + VP8</option>
+        <option value="none">{{ t("video_none") }}</option>
+        <option value="h264">{{ t("video_h264") }}</option>
+        <option value="h264_vp8">{{ t("video_h264_vp8") }}</option>
       </select>
-      <label><input type="checkbox" name="enabled" checked style="width:auto"> Aktiv</label>
+      <label><input type="checkbox" name="enabled" checked style="width:auto"> {{ t("enabled") }}</label>
     </section>
   </div>
-  <button type="submit">Hinzufügen</button>
+  <button type="submit">{{ t("add") }}</button>
 </form>
 {% endblock %}

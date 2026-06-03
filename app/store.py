@@ -161,6 +161,20 @@ class Store:
             )
             con.commit()
 
+    def update_number(
+        self, number_id: int, did_plus: str, sip_username: str, sip_password: str
+    ) -> None:
+        with closing(self.connect()) as con:
+            con.execute(
+                """
+                UPDATE numbers
+                SET did_plus = ?, sip_username = ?, sip_password = ?
+                WHERE id = ?
+                """,
+                (did_plus, sip_username, sip_password, number_id),
+            )
+            con.commit()
+
     def get_number(self, number_id: int) -> sqlite3.Row | None:
         with closing(self.connect()) as con:
             return con.execute("SELECT * FROM numbers WHERE id = ?", (number_id,)).fetchone()
@@ -233,6 +247,34 @@ class Store:
             )
             con.commit()
 
+    def update_client(self, client_id: int, values: dict[str, Any]) -> None:
+        with closing(self.connect()) as con:
+            con.execute(
+                """
+                UPDATE clients
+                SET client_id = ?, name = ?, extension = ?, sip_username = ?,
+                    sip_password = ?, ip_acl = ?, caller_id_plus = ?, enabled = ?,
+                    client_type = ?, video_enabled = ?, audio_codecs = ?, video_codecs = ?
+                WHERE id = ?
+                """,
+                (
+                    values["client_id"],
+                    values["name"],
+                    values["extension"],
+                    values["sip_username"],
+                    values["sip_password"],
+                    values.get("ip_acl", ""),
+                    values.get("caller_id_plus", ""),
+                    1 if values.get("enabled") else 0,
+                    values.get("client_type", "generic"),
+                    1 if values.get("video_enabled") else 0,
+                    values.get("audio_codecs", "alaw,ulaw"),
+                    values.get("video_codecs", ""),
+                    client_id,
+                ),
+            )
+            con.commit()
+
     def add_inbound_route(self, values: dict[str, Any]) -> None:
         with closing(self.connect()) as con:
             con.execute(
@@ -250,6 +292,26 @@ class Store:
             )
             con.commit()
 
+    def update_inbound_route(self, route_id: int, values: dict[str, Any]) -> None:
+        with closing(self.connect()) as con:
+            con.execute(
+                """
+                UPDATE routes_inbound
+                SET did_plus = ?, target_type = ?, target_id = ?,
+                    ring_seconds = ?, description = ?
+                WHERE id = ?
+                """,
+                (
+                    values["did_plus"],
+                    values["target_type"],
+                    values["target_id"],
+                    int(values.get("ring_seconds") or 45),
+                    values.get("description", ""),
+                    route_id,
+                ),
+            )
+            con.commit()
+
     def add_outbound_route(self, values: dict[str, Any]) -> None:
         with closing(self.connect()) as con:
             con.execute(
@@ -263,6 +325,26 @@ class Store:
                     int(values["number_id"]),
                     values.get("caller_id_plus", ""),
                     values.get("description", ""),
+                ),
+            )
+            con.commit()
+
+    def update_outbound_route(self, route_id: int, values: dict[str, Any]) -> None:
+        with closing(self.connect()) as con:
+            con.execute(
+                """
+                UPDATE routes_outbound
+                SET source_type = ?, source_id = ?, number_id = ?,
+                    caller_id_plus = ?, description = ?
+                WHERE id = ?
+                """,
+                (
+                    values["source_type"],
+                    values["source_id"],
+                    int(values["number_id"]),
+                    values.get("caller_id_plus", ""),
+                    values.get("description", ""),
+                    route_id,
                 ),
             )
             con.commit()

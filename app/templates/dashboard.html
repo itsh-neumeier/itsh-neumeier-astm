@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Dashboard</h1>
+<h1>{{ t("dashboard") }}</h1>
 <div class="grid">
-  <div class="card"><div class="metric">{{ numbers|length }}</div><div class="muted">Provider-Rufnummern</div></div>
-  <div class="card"><div class="metric">{{ clients|length }}</div><div class="muted">SIP-Clients</div></div>
-  <div class="card"><div class="metric">{{ inbound|length }}</div><div class="muted">Inbound-Routen</div></div>
-  <div class="card"><div class="metric">{{ outbound|length }}</div><div class="muted">Outbound-Routen</div></div>
+  <div class="card"><div class="metric">{{ numbers|length }}</div><div class="muted">{{ t("provider_numbers") }}</div></div>
+  <div class="card"><div class="metric">{{ clients|length }}</div><div class="muted">{{ t("sip_clients") }}</div></div>
+  <div class="card"><div class="metric">{{ inbound|length }}</div><div class="muted">{{ t("inbound") }}</div></div>
+  <div class="card"><div class="metric">{{ outbound|length }}</div><div class="muted">{{ t("outbound") }}</div></div>
 </div>
-<h2>Asterisk Status</h2>
+<h2>{{ t("asterisk_status") }}</h2>
 <pre>{{ status }}</pre>
 {% endblock %}
