@@ -46,6 +46,29 @@ docker run -d \
   ghcr.io/itsh-neumeier/itsh-neumeier-astm:latest
 ```
 
+## Portainer Stack
+
+Für Portainer steht eine Stack-Datei bereit:
+
+```text
+portainer-stack.yml
+```
+
+Deployment in Portainer:
+
+1. `Stacks` -> `Add stack`
+2. Inhalt aus `portainer-stack.yml` einfügen oder Git-Repository `https://github.com/itsh-neumeier/itsh-neumeier-astm` verwenden.
+3. Environment Variable `ADMIN_PASSWORD` setzen.
+4. Stack deployen.
+
+Image:
+
+```text
+ghcr.io/itsh-neumeier/itsh-neumeier-astm:latest
+```
+
+Hinweis: Das Stack-File enthält absichtlich kein `build`, damit Portainer direkt das veröffentlichte GHCR-Image zieht.
+
 WebGUI:
 
 ```text

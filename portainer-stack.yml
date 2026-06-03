@@ -1,0 +1,38 @@
+services:
+  astm:
+    image: ghcr.io/itsh-neumeier/itsh-neumeier-astm:latest
+    container_name: itsh-neumeier-astm
+    restart: unless-stopped
+    pull_policy: always
+    environment:
+      ADMIN_USER: "${ADMIN_USER:-admin}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:-change-this-password}"
+      WEB_PORT: "8080"
+      DATA_DIR: "/data"
+      BACKUP_DIR: "/backups"
+      ASTERISK_ETC: "/etc/asterisk"
+    ports:
+      - "8080:8080/tcp"
+      - "5060:5060/udp"
+      - "10000-20000:10000-20000/udp"
+    volumes:
+      - astm-data:/data
+      - astm-backups:/backups
+      - astm-asterisk:/etc/asterisk
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python3",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=5).read()",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  astm-data:
+  astm-backups:
+  astm-asterisk:
