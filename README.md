@@ -2,7 +2,7 @@
 
 All-in-one Docker-Lösung für Asterisk PJSIP, SIP-Trunk-Konfiguration, UniFi Talk Gateway und WebGUI-Management mit Login.
 
-Das Image basiert auf Ubuntu LTS und installiert Asterisk über die Distributionspakete.
+Das Image basiert auf Debian und baut Asterisk 20 LTS aus dem offiziellen Asterisk-Source-Tarball.
 
 Die WebGUI bildet die Kernlogik des ursprünglichen Shell/TUI-Scripts ab:
 
@@ -54,11 +54,13 @@ Für Portainer steht eine Stack-Datei bereit:
 portainer-stack.yml
 ```
 
+Diese Variante nutzt `network_mode: host`. Das ist für SIP/Asterisk auf Linux die robustere Variante, weil keine große RTP-Port-Range in Docker/Portainer gemappt werden muss.
+
 Deployment in Portainer:
 
 1. `Stacks` -> `Add stack`
 2. Inhalt aus `portainer-stack.yml` einfügen oder Git-Repository `https://github.com/itsh-neumeier/itsh-neumeier-astm` verwenden.
-3. Environment Variable `ADMIN_PASSWORD` setzen.
+3. `ADMIN_PASSWORD` im Stack-Editor ändern.
 4. Stack deployen.
 
 Image:
@@ -68,6 +70,8 @@ ghcr.io/itsh-neumeier/itsh-neumeier-astm:latest
 ```
 
 Hinweis: Das Stack-File enthält absichtlich kein `build`, damit Portainer direkt das veröffentlichte GHCR-Image zieht.
+
+Falls Host-Networking nicht möglich ist, gibt es zusätzlich `portainer-stack-bridge.yml`. Diese Bridge-Variante mappt nur `10000-10100/udp`, damit Portainer nicht an einer sehr großen RTP-Port-Range hängt. Für produktive Nutzung dann Asterisk-RTP passend begrenzen oder die Range bewusst erweitern.
 
 WebGUI:
 

@@ -4,7 +4,6 @@ services:
   astm:
     image: ghcr.io/itsh-neumeier/itsh-neumeier-astm:latest
     restart: unless-stopped
-    network_mode: host
     environment:
       ADMIN_USER: "admin"
       ADMIN_PASSWORD: "change-this-password"
@@ -12,6 +11,10 @@ services:
       DATA_DIR: "/data"
       BACKUP_DIR: "/backups"
       ASTERISK_ETC: "/etc/asterisk"
+    ports:
+      - "8080:8080/tcp"
+      - "5060:5060/udp"
+      - "10000-10100:10000-10100/udp"
     volumes:
       - astm-data:/data
       - astm-backups:/backups
