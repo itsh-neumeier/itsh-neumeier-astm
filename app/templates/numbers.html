@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Provider-Rufnummern</h1>
+<table>
+  <tr><th>DID</th><th>SIP User</th><th>Aktion</th></tr>
+  {% for number in numbers %}
+  <tr>
+    <td>{{ number.did_plus }}</td><td>{{ number.sip_username }}</td>
+    <td><form method="post" action="/delete/numbers/{{ number.id }}" style="padding:0;border:0;background:transparent"><button class="danger">Löschen</button></form></td>
+  </tr>
+  {% endfor %}
+</table>
+<h2>Rufnummer hinzufügen</h2>
+<form method="post" action="/numbers">
+  <label>DID mit Plus</label><input name="did_plus" placeholder="+491234567890" required>
+  <label>SIP Username</label><input name="sip_username" required>
+  <label>SIP Passwort</label><input name="sip_password" type="password" required>
+  <button type="submit">Hinzufügen</button>
+</form>
+{% endblock %}

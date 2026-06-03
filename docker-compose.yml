@@ -1,0 +1,23 @@
+services:
+  astm:
+    build: .
+    container_name: itsh-neumeier-astm
+    restart: unless-stopped
+    environment:
+      ADMIN_USER: admin
+      # Vor dem ersten Start setzen. Falls leer, wird ein Passwort in den Logs ausgegeben.
+      # ADMIN_PASSWORD: "change-this-password"
+      WEB_PORT: 8080
+    ports:
+      - "8080:8080/tcp"
+      - "5060:5060/udp"
+      - "10000-20000:10000-20000/udp"
+    volumes:
+      - astm-data:/data
+      - astm-backups:/backups
+      - astm-asterisk:/etc/asterisk
+
+volumes:
+  astm-data:
+  astm-backups:
+  astm-asterisk:

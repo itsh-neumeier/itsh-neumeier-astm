@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Routing</h1>
+<div class="split">
+  <section>
+    <h2>Inbound</h2>
+    <table>
+      <tr><th>DID</th><th>Ziel</th><th>Ring</th><th>Aktion</th></tr>
+      {% for route in inbound %}
+      <tr><td>{{ route.did_plus }}</td><td>{{ route.target_type }}/{{ route.target_id }}</td><td>{{ route.ring_seconds }}</td><td><form method="post" action="/delete/routes_inbound/{{ route.id }}" style="padding:0;border:0;background:transparent"><button class="danger">Löschen</button></form></td></tr>
+      {% endfor %}
+    </table>
+    <form method="post" action="/routes/inbound">
+      <label>DID</label><input name="did_plus" placeholder="+491234567890" required>
+      <label>Zieltyp</label><select name="target_type"><option value="unifi">unifi</option><option value="client">client</option></select>
+      <label>Ziel-ID</label><input name="target_id" placeholder="unifi-talk oder client100" required>
+      <label>Klingelzeit</label><input name="ring_seconds" value="45">
+      <label>Beschreibung</label><input name="description">
+      <button>Inbound-Route hinzufügen</button>
+    </form>
+  </section>
+  <section>
+    <h2>Outbound</h2>
+    <table>
+      <tr><th>Quelle</th><th>Nummer</th><th>Caller-ID</th><th>Aktion</th></tr>
+      {% for route in outbound %}
+      <tr><td>{{ route.source_type }}/{{ route.source_id }}</td><td>{{ route.number_id }}</td><td>{{ route.caller_id_plus }}</td><td><form method="post" action="/delete/routes_outbound/{{ route.id }}" style="padding:0;border:0;background:transparent"><button class="danger">Löschen</button></form></td></tr>
+      {% endfor %}
+    </table>
+    <form method="post" action="/routes/outbound">
+      <label>Quelltyp</label><select name="source_type"><option value="unifi">unifi</option><option value="client">client</option></select>
+      <label>Quell-ID</label><input name="source_id" value="unifi-talk" required>
+      <label>Provider-Rufnummer</label>
+      <select name="number_id">
+        {% for number in numbers %}<option value="{{ number.id }}">{{ number.did_plus }}</option>{% endfor %}
+      </select>
+      <label>Caller-ID Plus optional</label><input name="caller_id_plus">
+      <label>Beschreibung</label><input name="description">
+      <button>Outbound-Route hinzufügen</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

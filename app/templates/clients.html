@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>SIP-Clients / Nebenstellen</h1>
+<table>
+  <tr><th>ID</th><th>Name</th><th>Ext</th><th>User</th><th>Caller-ID</th><th>Aktiv</th><th>Aktion</th></tr>
+  {% for client in clients %}
+  <tr>
+    <td>{{ client.client_id }}</td><td>{{ client.name }}</td><td>{{ client.extension }}</td><td>{{ client.sip_username }}</td><td>{{ client.caller_id_plus }}</td><td>{{ client.enabled }}</td>
+    <td><form method="post" action="/delete/clients/{{ client.id }}" style="padding:0;border:0;background:transparent"><button class="danger">Löschen</button></form></td>
+  </tr>
+  {% endfor %}
+</table>
+<h2>Client hinzufügen</h2>
+<form method="post" action="/clients">
+  <div class="split">
+    <section>
+      <label>Client-ID</label><input name="client_id" placeholder="client100" required>
+      <label>Name</label><input name="name" required>
+      <label>Nebenstelle</label><input name="extension" placeholder="100" required>
+      <label>SIP Username</label><input name="sip_username" placeholder="100" required>
+      <label>SIP Passwort</label><input name="sip_password" type="password" required>
+    </section>
+    <section>
+      <label>IP ACL optional</label><input name="ip_acl" placeholder="192.168.10.50/32">
+      <label>Caller-ID Plus optional</label><input name="caller_id_plus" placeholder="+491234567890">
+      <label>Typ</label><input name="client_type" value="generic">
+      <label>Audio-Codecs</label><input name="audio_codecs" value="alaw,ulaw">
+      <label>Video-Codecs</label><input name="video_codecs" placeholder="h264">
+      <label><input type="checkbox" name="enabled" checked style="width:auto"> Aktiv</label>
+      <label><input type="checkbox" name="video_enabled" style="width:auto"> Video aktiv</label>
+    </section>
+  </div>
+  <button type="submit">Hinzufügen</button>
+</form>
+{% endblock %}

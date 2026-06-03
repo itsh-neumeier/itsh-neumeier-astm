@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.tmp-*/
+.tmp-data/
+.tmp-asterisk/
+.tmp-backups/
+.env
+dist/
+build/
